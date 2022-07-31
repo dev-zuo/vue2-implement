@@ -4,6 +4,7 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </nav>
+    <p>{{ $router.app.curRoute }}</p>
     <router-view />
   </div>
 </template>
