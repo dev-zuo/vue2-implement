@@ -4,12 +4,12 @@
 
 分支 | 描述 | tag
 --- | --- | ---
-main | @vue/cli创建的初始化项目结构（vue2+vue-router(hash)+vuex+eslint+js）| v0.0.1-init
-vue-router | main + vue-router 实现（hash/history模式）
+main | @vue/cli创建的初始化项目结构（vue2+vue-router(hash)+vuex+eslint+js）| [v0.0.1-init](https://github.com/zuoxiaobai/vue2-implement/tree/vue-cli-init)
+[vue-router](https://github.com/zuoxiaobai/vue2-implement/tree/vue-router) | main + vue-router 实现（hash/history模式）
 
 ## 实现笔记
 
-vue-router：[Vue2全家桶实现: (1)手写实现vue-router](https://github.com/zuoxiaobai/zuo11.com/blob/2022-07/src/notes/2022/7/vue2%E5%85%A8%E5%AE%B6%E6%A1%B6%E5%AE%9E%E7%8E%B0_1_%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0vue_router_.md)
+vue-router：[Vue2全家桶实现: (1)mini vue-router](https://github.com/zuoxiaobai/zuo11.com/blob/2022-07/src/notes/2022/7/vue2%E5%85%A8%E5%AE%B6%E6%A1%B6%E5%AE%9E%E7%8E%B0_1_%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0vue_router_.md)
 
 ## Project setup（@vue/cli自动生成）
 
