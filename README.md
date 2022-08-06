@@ -6,6 +6,7 @@
 --- | --- | ---
 main | @vue/cli创建的初始化项目结构（vue2+vue-router(hash)+vuex+eslint+js）| [v0.0.1-init](https://github.com/zuoxiaobai/vue2-implement/tree/vue-cli-init)
 [vue-router](https://github.com/zuoxiaobai/vue2-implement/tree/vue-router) | main + vue-router 实现（hash/history模式）
+[vuex](https://github.com/zuoxiaobai/vue2-implement/tree/vuex) | main + vuex 实现
 
 ## 实现笔记
 
