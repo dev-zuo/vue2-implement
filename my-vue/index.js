@@ -13,7 +13,9 @@ class MyVue {
     const domUpdate = (name) => {
       return (val, oldVal) => {
         console.log(
-          `${name} 数据变化，新值: ${val}, 旧值: ${oldVal} 假装执行dom更新`
+          `${name} 数据变化，新值: ${JSON.stringify(
+            val
+          )}, 旧值: ${JSON.stringify(oldVal)} 执行dom更新`
         );
       };
     };
@@ -52,3 +54,4 @@ console.log("app", app);
 app.data.a.b.c = 123;
 app.data.name = "test";
 app.data.a = { b: { c: 777 } };
+app.data.a = { b: { c: 9 } };

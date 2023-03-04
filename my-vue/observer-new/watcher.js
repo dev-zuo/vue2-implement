@@ -25,11 +25,18 @@ export function parsePath(path) {
 // vm.$watch('a.b,c', function(newVal, oldVal) {
 //     // a.b.c 变化后，执行一些操作
 // })
+
+let uid = 0;
 export class Watcher {
   constructor(vm, expOrFn, cb) {
     this.vm = vm;
     this.getter = parsePath(expOrFn); // parsePath('a.b.c')，可以理解为获取 data.a.b.c 的值
     this.cb = cb; // function(newVal, oldVal) { // a.b.c 变化后，执行一些操作 }
+    this.id = ++uid;
+    this.deps = [];
+    this.depIds = new Set();
+    this.newDeps = [];
+    this.newDepIds = new Set();
     this.idInfo = {
       id: Math.floor(Math.random() * 999) + 1, // 1 - 1000
       expOrFn,
@@ -44,14 +51,7 @@ export class Watcher {
     Dep.target = this;
     let value = this.getter.call(this.vm, this.vm);
     Dep.target = undefined;
-    //  cleanupDeps () {
-    // let i = this.deps.length;
-    // while (i--) {
-    //   const dep = this.deps[i];
-    //   if (!this.newDepIds.has(dep.id)) {
-    //     dep.removeSub(this);
-    //   }
-    // }
+    this.cleanupDeps();
     return value;
   }
 
@@ -59,5 +59,26 @@ export class Watcher {
     const oldVal = this.value;
     this.value = this.get();
     this.cb.call(this.vm, this.value, oldVal);
+  }
+
+  /**
+   * Clean up for dependency collection.
+   */
+  cleanupDeps() {
+    let i = this.deps.length;
+    while (i--) {
+      const dep = this.deps[i];
+      if (!this.newDepIds.has(dep.id)) {
+        dep.removeSub(this);
+      }
+    }
+    let tmp = this.depIds;
+    this.depIds = this.newDepIds;
+    this.newDepIds = tmp;
+    this.newDepIds.clear();
+    tmp = this.deps;
+    this.deps = this.newDeps;
+    this.newDeps = tmp;
+    this.newDeps.length = 0;
   }
 }

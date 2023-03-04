@@ -57,7 +57,9 @@ export class Watcher {
 
   update() {
     const oldVal = this.value;
+    console.log("-----获取新值");
     this.value = this.get();
+    console.log("-----触发回调");
     this.cb.call(this.vm, this.value, oldVal);
   }
 }
