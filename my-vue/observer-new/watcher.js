@@ -32,11 +32,14 @@ export class Watcher {
     this.vm = vm;
     this.getter = parsePath(expOrFn); // parsePath('a.b.c')，可以理解为获取 data.a.b.c 的值
     this.cb = cb; // function(newVal, oldVal) { // a.b.c 变化后，执行一些操作 }
+
+    // 去重标记
     this.id = ++uid;
     this.deps = [];
     this.depIds = new Set();
     this.newDeps = [];
     this.newDepIds = new Set();
+
     this.idInfo = {
       id: Math.floor(Math.random() * 999) + 1, // 1 - 1000
       expOrFn,
@@ -48,15 +51,18 @@ export class Watcher {
   get() {
     // 下面三句话，不好理解，需要结合 Dep 类，Observer 类，parsePath 的实现来理解
     // 后面将 Observer 介绍完后，再来看这里的代码就好理解了
+    console.log(`---get准备开始收集依赖, ${JSON.stringify(this.idInfo)}`);
     Dep.target = this;
     let value = this.getter.call(this.vm, this.vm);
     Dep.target = undefined;
+    console.log("---收集依赖完成，清理依赖");
     this.cleanupDeps();
     return value;
   }
 
   update() {
     const oldVal = this.value;
+    console.log(`---触发dep.update, 获取新值${JSON.stringify(this.idInfo)}`);
     this.value = this.get();
     this.cb.call(this.vm, this.value, oldVal);
   }
@@ -69,6 +75,7 @@ export class Watcher {
     while (i--) {
       const dep = this.deps[i];
       if (!this.newDepIds.has(dep.id)) {
+        console.log("---cleanupDeps ", dep.id);
         dep.removeSub(this);
       }
     }

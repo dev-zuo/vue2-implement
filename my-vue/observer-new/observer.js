@@ -20,13 +20,16 @@ export class Observer {
 function defineReactive(data, key, val) {
   // 如果对象的属性也是对象，递归 Observer
   if (typeof val === "object") {
+    console.log(`---属性值为对象，递归 observer, ${key}`);
     new Observer(val);
   }
-  let dep = new Dep();
+  let dep = new Dep(key);
+  console.log(`---拦截属性 ${key}, dep.id:`, dep.id);
   Object.defineProperty(data, key, {
     enumerable: true, // /ɪˈnjuːm(ə)rəb(ə)l/
     configurable: true,
     get: function () {
+      console.log(`---开始收集依赖, key:${key}, val: ${val}`);
       dep.depend(); // 将依赖存到 Dep 中
       return val;
     },

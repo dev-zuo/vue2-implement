@@ -17,8 +17,8 @@ class MyVue {
   constructor(options) {
     this.data = options.data();
     // 1、遍历 data，调用 Observer 转换为 getter/setter, 拦截处理
+    console.log("开始收集依赖");
     const observerData = new Observer(this.data);
-    console.log("开始收集依赖", observerData);
 
     // 2、收集依赖（模板、watch哪些地方用到了 data 数据，每一个地方就是一个依赖实例
     // > 2.1 template 处理，省略 complier 部分，模板里面有使用 name, a 两个变量
