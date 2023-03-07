@@ -12,7 +12,6 @@ function copyAugment(target, src, keys) {
 }
 
 export class Observer {
-  //  { c: 1 }
   constructor(value) {
     this.value = value;
     // 新增 dep，有两个好处，1、避免重复侦测，2、方便数组拦截方法获取实例

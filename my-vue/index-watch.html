@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my-vue observer</title>
+</head>
+<body>
+<!-- Uncaught SyntaxError: Cannot use import statement outside a module -->
+<!-- <script> -->
+<script type="module">
+import { Observer } from "./observer-new-watch/observer.js";
+import { Watcher } from "./observer-new-watch/watcher.js";
+
+class MyVue {
+  constructor(options) {
+    this.data = options.data();
+    // 1、遍历 data，调用 Observer 转换为 getter/setter, 拦截处理
+    console.log("开始收集依赖");
+    const observerData = new Observer(this.data);
+
+    // 2、收集依赖（模板、watch哪些地方用到了 data 数据，每一个地方就是一个依赖实例
+    // > 2.1 template 处理，省略 complier 部分，模板里面有使用 name, a 两个变量
+    const domUpdate = (name) => {
+      return (val, oldVal) => {
+        console.log(
+          `${name} 数据变化，新值: ${JSON.stringify(val)}, 旧值: ${JSON.stringify(oldVal)} 执行dom更新`
+        );
+      };
+    };
+    new Watcher(this.data, "name", domUpdate("name"));
+    // new Watcher(this.data, "a", domUpdate("a"));
+    // > 2.2 watch 处理
+    Object.keys(options.watch).forEach((prop) => {
+      let val = options.watch[prop];
+      // new Watcher(this.data, 'a.b.c', options.watch['a.b.c'].handler)
+      new Watcher(this.data, prop, val?.handler || val);
+    });
+  }
+}
+
+// $watch 实现
+MyVue.prototype.$watch = function (expOrFn, cb, options) {
+    const vm = this
+    options = options || {}
+    // 由于这里没有做映射，vm 还拿不到 data，这里修改下
+    const watcher = new Watcher(vm.data, expOrFn, cb, options)
+    if (options.immediate) {
+        cb.call(vm, watcher.value)
+    }
+    return function unWatchFn() {
+        watcher.teardown()
+    }
+}
+
+// observer 功能测试
+const app = new MyVue({
+  template: "<div>{{ name }}</div><div>{{ a }}</div>",
+  data() {
+    return {
+      a: { b: { c: 1 } },
+      b: { a: { c: 1 } },
+      name: "123",
+      list: [{text: 'abc'}, {text: 'def'}]
+    };
+  },
+  watch: {
+    "a.b.c": {
+      handler(val, oldVal) {
+        console.log("监听到 a.b.c 改动", val, oldVal);
+      },
+    },
+    list: {
+      handler(val, oldVal) {
+        console.log("监听到 list 改动", val, oldVal);
+      },
+    },
+  },
+});
+
+app.$watch('a', (val, oldVal) => {
+    console.log(`【普通】a 发生了变更`, val, oldVal)
+}, {
+    immediate: true
+})
+
+let unWatchB = app.$watch('b', (val, oldVal) => {
+    console.log(`【深层次】b 发生了变更`, val, oldVal)
+}, {
+    deep: true
+})
+
+// app.$watch('a', (val, oldVal) => {
+//     console.log(`【立即执行】a 发生了变更`, val, oldVal)
+// }, {
+//     immediate: true
+// })
+console.log("app", app);
+
+// 修改数据，看是否侦测到数据变更
+console.log("执行 app.data.a.b.c = 123;");
+app.data.a.b.c = 123; // 不会出发 a watch
+console.log("执行 app.data.b.a.c = 777;");
+app.data.b.a.c = 777; // 会出发 b deep watch
+
+unWatchB()
+app.data.b.a.c = 666; // 不会出发 b，因为已销毁
+</script>
+</body>
+</html>
