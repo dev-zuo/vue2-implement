@@ -48,5 +48,5 @@ methodsToPatch.forEach(function (method) {
   });
 });
 
-console.log("arrayMethods", arrayMethodsTemp);
+// console.log("arrayMethods", arrayMethodsTemp);
 export const arrayMethods = arrayMethodsTemp;

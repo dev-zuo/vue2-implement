@@ -51,18 +51,18 @@ export class Watcher {
   get() {
     // 下面三句话，不好理解，需要结合 Dep 类，Observer 类，parsePath 的实现来理解
     // 后面将 Observer 介绍完后，再来看这里的代码就好理解了
-    console.log(`---get准备开始收集依赖, ${JSON.stringify(this.idInfo)}`);
+    // console.log(`---get准备开始收集依赖, ${JSON.stringify(this.idInfo)}`);
     Dep.target = this;
     let value = this.getter.call(this.vm, this.vm);
     Dep.target = undefined;
-    console.log("---收集依赖完成，清理依赖");
+    // console.log("---收集依赖完成，清理依赖");
     this.cleanupDeps();
     return value;
   }
 
   update() {
     const oldVal = this.value;
-    console.log(`---触发dep.update, 获取新值${JSON.stringify(this.idInfo)}`);
+    // console.log(`---触发dep.update, 获取新值${JSON.stringify(this.idInfo)}`);
     this.value = this.get();
     this.cb.call(this.vm, this.value, oldVal);
   }
@@ -75,7 +75,7 @@ export class Watcher {
     while (i--) {
       const dep = this.deps[i];
       if (!this.newDepIds.has(dep.id)) {
-        console.log("---cleanupDeps ", dep.id);
+        // console.log("---cleanupDeps ", dep.id);
         dep.removeSub(this);
       }
     }

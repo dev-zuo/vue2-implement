@@ -17,7 +17,7 @@ export class Observer {
     // 新增 dep，有两个好处，1、避免重复侦测，2、方便数组拦截方法获取实例
     this.dep = new Dep();
     def(value, "__ob__", this); // 为每个侦测的数据加上 __ob__ 属性
-    console.log("==================>", value);
+    // console.log("==================>", value);
     if (Array.isArray(value)) {
       if (hasProto) {
         value.__proto__ = arrayMethods;
