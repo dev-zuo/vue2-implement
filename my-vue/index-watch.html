@@ -10,7 +10,7 @@
 <!-- Uncaught SyntaxError: Cannot use import statement outside a module -->
 <!-- <script> -->
 <script type="module">
-import { Observer } from "./observer-new-watch/observer.js";
+import { Observer, del, set } from "./observer-new-watch/observer.js";
 import { Watcher } from "./observer-new-watch/watcher.js";
 
 class MyVue {
@@ -54,6 +54,9 @@ MyVue.prototype.$watch = function (expOrFn, cb, options) {
     }
 }
 
+MyVue.prototype.$set = set;
+MyVue.prototype.$delete = del;
+
 // observer 功能测试
 const app = new MyVue({
   template: "<div>{{ name }}</div><div>{{ a }}</div>",
@@ -69,6 +72,11 @@ const app = new MyVue({
     "a.b.c": {
       handler(val, oldVal) {
         console.log("监听到 a.b.c 改动", val, oldVal);
+      },
+    },
+    "a.b": {
+      handler(val, oldVal) {
+        console.log("监听到 a.b 改动", val, oldVal);
       },
     },
     list: {
@@ -106,6 +114,32 @@ app.data.b.a.c = 777; // 会出发 b deep watch
 
 unWatchB()
 app.data.b.a.c = 666; // 不会出发 b，因为已销毁
+
+console.log('=========================================')
+// app.data.a.b.d = 123 // 新增一个属性
+// app.data.a.b.d = 789 // 再修改该属性，看是否是响应式的
+
+// // data 层级新增属性测试
+// app.data.test = 'test'
+
+// app.data.list[0] = 1 // 通过下标修改数组
+
+app.$set(app.data.a.b, 'd', 123) // 新增一个属性
+app.$watch('a.b.d', (val, oldVal) => {
+    console.log(`【普通】a.b.d 发生了变更`, val, oldVal)
+})
+app.$set(app.data.a.b, 'd', 789) 
+// data 层级新增属性测试
+app.$set(app.data, 'test', 'test')
+app.$watch('test', (val, oldVal) => {
+    console.log(`test 发生了变更`, val, oldVal)
+})
+app.data.test = '456'
+
+app.$set(app.data.list, 0, 1) // 通过$set下标修改数组
+console.log('开始删除')
+app.$delete(app.data.a.b, 'd')
+app.$delete(app.data.list, 0)
 </script>
 </body>
 </html>
