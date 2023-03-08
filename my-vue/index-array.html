@@ -82,6 +82,15 @@ console.log("执行 app.data.list.push({text: 'cde'})");
 app.data.list.push({text: 'cde'})
 app.data.list.unshift({text: 'hij'})
 app.data.list.splice(0, 1, {text: 'bnm'})
+
+console.log('=========================================')
+app.data.a.b.d = 123 // 新增一个属性
+app.data.a.b.d = 789 // 再修改该属性，看是否是响应式的
+
+// data 层级新增属性测试
+app.data.test = 'test'
+
+app.data.list[0] = 1 // 通过下标修改数组
 </script>
 </body>
 </html>

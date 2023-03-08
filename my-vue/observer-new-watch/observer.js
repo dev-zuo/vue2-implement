@@ -65,6 +65,7 @@ function defineReactive(data, key, val) {
       return val;
     },
     set: function (newVal) {
+      console.log("---set", data, key, val, newVal);
       if (val === newVal) {
         return;
       }
@@ -103,4 +104,68 @@ function isObject(obj) {
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 function hasOwn(obj, key) {
   return hasOwnProperty.call(obj, key);
+}
+
+/**
+ * Set a property on an object. Adds the new property and
+ * triggers change notification if the property doesn't
+ * already exist.
+ */
+export function set(target, key, val) {
+  // 如果是数组，通过 splice 来添加/触发响应
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    // 如果设置的下标超了，延长数组长度
+    target.length = Math.max(target.length, key);
+    // 通过 splice 修改或设置值，触发 target 的 splice 方法拦截，通知更新，并把新增元素做响应式处理
+    target.splice(key, 1, val);
+    return val;
+  }
+  // 如果这个值已经存在了，直接设置值，返回
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val;
+    return val;
+  }
+
+  // 判断对象是否是 vue 响应式数据
+  const ob = target.__ob__;
+  // 如果不是 vue 响应式数据，直接设置值后返回。
+  if (!ob) {
+    target[key] = val;
+    return val;
+  }
+  // 如果 target 是响应式数据，将新增的属性进行 getter/setter 拦截
+  defineReactive(ob.value, key, val);
+  // target 变更，通知依赖更新
+  ob.dep.notify();
+  return val;
+}
+
+export function isValidArrayIndex(val) {
+  const n = parseFloat(String(val));
+  return n >= 0 && Math.floor(n) === n && isFinite(val);
+}
+
+/**
+ * Delete a property and trigger change if necessary.
+ */
+export function del(target, key) {
+  // 如果是数组，直接用 splice 删除
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  // 如果是对象
+  const ob = target.__ob__;
+  // 如果对象上不存在这个属性，返回
+  if (!hasOwn(target, key)) {
+    return;
+  }
+  // 删除这个属性
+  delete target[key];
+  // 非 vue 响应式数据，return
+  if (!ob) {
+    return;
+  }
+  // 如果是 vue 响应式数据，通知依赖更新
+  ob.dep.notify();
 }
